@@ -12,7 +12,7 @@ import {
 } from '@chakra-ui/react'
 import { convertMicroDenomToDenom } from 'util/conversion'
 
-const SimpleTable = ({ data }) => {
+const SimpleTable = ({ data, unit }) => {
   return (
     <TableContainer>
       <Table variant="simple">
@@ -28,7 +28,9 @@ const SimpleTable = ({ data }) => {
             <Tr key={index}>
               <Td>{index + 1}</Td>
               <Td>{element.bidder_id}</Td>
-              <Td>{convertMicroDenomToDenom(element.price, 24).toFixed(2)}</Td>
+              <Td>
+                {convertMicroDenomToDenom(element.price, unit).toFixed(2)}
+              </Td>
             </Tr>
           ))}
         </Tbody>

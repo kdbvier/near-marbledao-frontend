@@ -59,9 +59,24 @@ const CollectionDiv = styled('div', {
 })
 
 const ImgDiv = styled('div', {
+  width: '100%',
+  paddingBottom: '100%',
+  display: 'block',
+  content: '',
+  position: 'relative',
   ' img': {
-    borderTopLeftRadius: '$4',
-    borderTopRightRadius: '$4',
+    position: 'absolute',
+    zIndex: '-1',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+    objectPosition: 'center',
+    borderTopRightRadius: '20px',
+    borderTopLeftRadius: '20px',
   },
 })
 const BannerDiv = styled('div', {

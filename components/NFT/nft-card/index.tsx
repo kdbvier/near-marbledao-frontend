@@ -2,9 +2,10 @@ import { ChakraProvider, Stack, Text, Image, Flex } from '@chakra-ui/react'
 import * as React from 'react'
 import { styled } from 'components/theme'
 import { NftInfo } from 'services/nft/type'
-import DateCountdown from 'components/DateCountdown'
+import DateCountdown from 'components/DateCountdownMin'
 import { Button } from 'components/Button'
 import { IconWrapper } from 'components/IconWrapper'
+import { useTokenInfoFromAddress } from 'hooks/useTokenInfo'
 import { Credit, Near } from 'icons'
 import { NftPrice } from './price'
 import Link from 'next/link'
@@ -21,6 +22,8 @@ interface NftCardProps {
 }
 
 export function NftCard({ nft, id, type }): JSX.Element {
+  const tokenInfo = useTokenInfoFromAddress(nft.ft_token_id)
+  console.log('tokenInfo: ', tokenInfo)
   return (
     <NftCardDiv className="nft-card">
       <ChakraProvider>
@@ -39,10 +42,21 @@ export function NftCard({ nft, id, type }): JSX.Element {
             {nft.saleType !== 'NotSale' && (
               <Flex alignItems="center">
                 <Text>Price: &nbsp;</Text>
-                <Flex>
-                  {convertMicroDenomToDenom(nft.price, 24).toFixed(2)}&nbsp;
-                  <Near width="15px" />
-                </Flex>
+                {tokenInfo && (
+                  <Flex alignItems="center">
+                    {convertMicroDenomToDenom(
+                      nft.price,
+                      tokenInfo.decimals
+                    ).toFixed(2)}
+                    &nbsp;
+                    <img
+                      src={tokenInfo.logoURI}
+                      alt="token"
+                      width="20px"
+                      height="20px"
+                    />
+                  </Flex>
+                )}
               </Flex>
             )}
           </Flex>
@@ -51,6 +65,7 @@ export function NftCard({ nft, id, type }): JSX.Element {
           <Timetrack>
             <DateCountdown
               dateTo={Number(nft.ended_at) / 1000000 || Date.now()}
+              dateFrom={Number(nft.current_time) * 1000}
               interval={0}
               mostSignificantFigure="none"
               numberOfFigures={3}

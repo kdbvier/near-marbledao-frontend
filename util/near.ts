@@ -74,7 +74,10 @@ export const STABLE_TOKEN_INDEX = config.STABLE_TOKEN_INDEX;
 export const STABLE_TOKEN_USN_INDEX = config.STABLE_TOKEN_USN_INDEX;
 
 export const BTC_POOL_INDEX = getConfig().BTC_IDS_INDEX;
-
+export const TOKEN_DENOMS = {
+  'near':24,
+  'hera.cmdev0.testnet':8
+};
 export const getStableTokenIndex = (stable_pool_id: string | number) => {
   const id = stable_pool_id.toString();
   switch (id) {
@@ -107,9 +110,9 @@ export const ONE_YOCTO_NEAR = '0.000000000000000000000001';
 export const NFT_CONTRACT_NAME = config.NFT_CONTRACT_NAME;
 
 export const MARKETPLACE_CONTRACT_NAME = config.MARKETPLACE_CONTRACT_NAME;
-
+export const HERA_CONTRACT_NAME = config.HERA_CONTRACT_NAME
 export const getGas = (gas: string) =>
-  gas ? new BN(gas) : new BN('100000000000000');
+  gas ? new BN(gas) : new BN('300000000000000');
 export const getAmount = (amount: string) =>
   amount ? new BN(utils.format.parseNearAmount(amount)) : new BN('0');
 
@@ -329,7 +332,7 @@ export const sendTransactionForMarketplace = async(params: Transaction) => {
     functionCalls: [{
       methodName:'storage_deposit',
       args: {
-        account_id: wallet.accountName
+        account_id: wallet.accountId
       },
       amount: '0.00859'
     }]

@@ -76,7 +76,9 @@ export const createBalanceFormatter = ({
 export const formatNearToYocto = (balance: number | string) => {
   return utils.format.parseNearAmount(balance.toString())
 }
-
+export const formatHera = (balance: number | string) => {
+  return (Number(balance) * 100000000).toString()
+}
 export const formatTokenBalance = createBalanceFormatter()
 
 export const dollarValueFormatterWithDecimals = createBalanceFormatter({

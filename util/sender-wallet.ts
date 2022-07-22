@@ -280,7 +280,7 @@ export const getCurrentWallet = () => {
   return {
     wallet: wallet,
     wallet_type: WALLET_TYPE.WEB_WALLET,
-
+    accountId: wallet.getAccountId(),
     accountName: getAccountName(wallet.getAccountId()),
   };
 };

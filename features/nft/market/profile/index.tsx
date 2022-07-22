@@ -124,7 +124,7 @@ export const MyCollectedNFTs = () => {
       ownedNFTs = await nftViewFunction({
         methodName: 'nft_tokens_for_owner',
         args: {
-          account_id: wallet.accountName,
+          account_id: wallet.accountId,
         },
       })
     } catch (err) {
@@ -166,6 +166,8 @@ export const MyCollectedNFTs = () => {
             res_nft['price'] = market_data.price
             res_nft['started_at'] = market_data.started_at
             res_nft['ended_at'] = market_data.ended_at
+            res_nft['current_time'] = market_data.current_time
+            res_nft['ft_token_id'] = market_data.ft_token_id
           } else res_nft['saleType'] = 'NotSale'
           collectionNFTs.push(res_nft)
         } catch (err) {
@@ -174,7 +176,7 @@ export const MyCollectedNFTs = () => {
       })
     )
     return collectionNFTs
-  }, [wallet.accountName])
+  }, [wallet.accountId])
   useEffect(() => {
     if (isLargeNFT) {
       if (nft_column_count <= 4) return

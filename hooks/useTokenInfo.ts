@@ -50,7 +50,11 @@ export const useTokenInfo = (tokenSymbol: string) => {
     [tokenSymbol, tokenList]
   )
 }
-
+export const useTokenInfoFromAddress = (tokenAddress: string) => {
+  const [tokenList] = useTokenList()
+  if(tokenAddress==='near') return unsafelyGetBaseToken()
+  return unsafelyGetTokenInfoFromAddress(tokenAddress, tokenList?.tokens)
+}
 /* hook for token info retrieval based on `poolId` */
 export const useTokenInfoByPoolId = (poolId: number) => {
   const [poolList] = usePoolList()

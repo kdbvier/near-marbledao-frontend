@@ -74,7 +74,7 @@ export default function Pools() {
     // if (res.data?.near.usd)
     //   return res.data?.near.usd
     // else
-    return '3.4'
+    return '4.5405'
   }
 
   useEffect(() => {

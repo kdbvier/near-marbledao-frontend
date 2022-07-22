@@ -179,6 +179,7 @@ export const Collection = ({ id }: CollectionProps) => {
         res_nft['tokenId'] = element.token_id.split(':')[1]
         res_nft['title'] = res_collection.name
         res_nft['image'] = process.env.NEXT_PUBLIC_PINATA_URL + res_nft.uri
+        console.log('marketData: ', market_data)
         if (market_data) {
           res_nft['saleType'] = market_data.is_auction
             ? 'Auction'
@@ -186,6 +187,8 @@ export const Collection = ({ id }: CollectionProps) => {
           res_nft['price'] = market_data.price
           res_nft['started_at'] = market_data.started_at
           res_nft['ended_at'] = market_data.ended_at
+          res_nft['current_time'] = market_data.current_time
+          res_nft['ft_token_id'] = market_data.ft_token_id
         } else res_nft['saleType'] = 'NotSale'
         console.log('res_nft: ', res_nft)
         collectionNFTs.push(res_nft)
@@ -214,7 +217,6 @@ export const Collection = ({ id }: CollectionProps) => {
       if (id === undefined || id == '[name]') return false
 
       const tokensInfo = await fetchTokensInfo()
-      console.log('tokensInfo: ', tokensInfo)
       let traits = []
       for (let i = 0; i < tokensInfo.length; i++) {
         if (

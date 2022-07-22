@@ -227,8 +227,9 @@ export default function getConfig(env: string = process.env.NEXT_PUBLIC_NODE_URL
         CUMULATIVE_REF_BUYBACK:
           process.env.CUMULATIVE_REF_BUYBACK || '132011.3147',
         BLACKLIST_POOL_IDS: [''],
-        NFT_CONTRACT_NAME:'marbledao.testnet',
-        MARKETPLACE_CONTRACT_NAME: "marketplace.marbledao.testnet"
+        NFT_CONTRACT_NAME:'nft.marbledao.testnet',
+        MARKETPLACE_CONTRACT_NAME: "marketplace.marbledao.testnet",
+        HERA_CONTRACT_NAME: "hera.cmdev0.testnet"
       };
     default:
       return {

@@ -145,7 +145,7 @@ export const CreateNFT = () => {
   }
   useEffect(() => {
     ;(async () => {
-      if (!wallet.accountName) {
+      if (!wallet.accountId) {
         return
       }
 
@@ -158,7 +158,7 @@ export const CreateNFT = () => {
           process.env.NEXT_PUBLIC_PINATA_URL + collectionList[i].metadata.media
         )
         console.log('collcetionID: ', collectionList[i].creator_id)
-        if (wallet.accountName !== collectionList[i].creator_id) continue
+        if (wallet.accountId !== collectionList[i].creator_id) continue
         //if (collectionList[i].uri.indexOf("airdrop") == -1){
         try {
           let ipfs_collection = await fetch(
@@ -179,10 +179,10 @@ export const CreateNFT = () => {
       }
       setNftCollections(collections)
     })()
-  }, [wallet.accountName])
+  }, [wallet.accountId])
 
   const createNFT = async () => {
-    if (!wallet.accountName) {
+    if (!wallet.accountId) {
       toast.warning(`Please connect your wallet.`, {
         position: 'top-right',
         autoClose: 5000,
@@ -281,7 +281,7 @@ export const CreateNFT = () => {
           methodName: 'nft_mint',
           args: {
             token_series_id: collectionId,
-            receiver_id: wallet.accountName,
+            receiver_id: wallet.accountId,
             nft_metadata: {
               media: data.nft,
               reference: ipfsHash,

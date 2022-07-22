@@ -15,7 +15,21 @@ export const useNearDollarValue = async () => {
   // const res = await axios.get(url)
   // if (res.data?.near.usd)
   //   return res.data?.near.usd
-  return 3.4
+  return 4.5405
+}
+
+export const useHeraDollarValue = async () => {
+  // const url = "https://api.coingecko.com/api/v3/simple/price?ids=near&include_last_updated_at=true&vs_currencies=usd"
+  // const res = await axios.get(url)
+  // if (res.data?.near.usd)
+  //   return res.data?.near.usd
+  return 0.25
+}
+
+export const getTokenPrice = (name: string) => {
+  if (name === 'HERA') return 0.25
+  if (name === 'NEAR') return 4.5405
+  return 4.5405
 }
 
 export const useTokenDollarValue = (tokenSymbol?: string) => {
@@ -64,7 +78,8 @@ export const useTokenDollarValueQuery = (tokenSymbols?: Array<string>) => {
     async (): Promise<Array<number>> => {
       const tokenIds = tokenSymbols.map(
         (tokenSymbol) =>
-          (unsafelyGetTokenInfo(tokenSymbol) || getIBCAssetInfo(tokenSymbol))?.id
+          (unsafelyGetTokenInfo(tokenSymbol) || getIBCAssetInfo(tokenSymbol))
+            ?.id
       )
 
       const response = await fetch(getApiUrl(tokenIds), {

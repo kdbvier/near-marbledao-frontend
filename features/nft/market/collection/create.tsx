@@ -29,7 +29,7 @@ import {
   HStack,
   IconButton,
 } from '@chakra-ui/react'
-import { CloseIcon } from '@chakra-ui/icons'
+import { CloseIcon, SmallAddIcon } from '@chakra-ui/icons'
 import { toast } from 'react-toastify'
 import DropZone from 'components/DropZone'
 import FeaturedImageUpload from 'components/FeaturedImageUpload'
@@ -52,7 +52,6 @@ let themeValue = '1'
 export const CollectionCreate = () => {
   const router = useRouter()
   const { txHash, pathname, errorType } = getURLInfo()
-  const [royaltyValues, setRoyaltyValues] = useState([{ name: '', price: '' }])
   //const toast = useToast()
   const [nftcategories, setNftCategories] = useState<NftCategory[]>([])
   const [isJsonUploading, setJsonUploading] = useState(false)
@@ -68,6 +67,9 @@ export const CollectionCreate = () => {
   const [explicit, setExplicit] = useState('')
   const [collectionIpfsHash, setCollectionIpfsHash] = useState('')
   const wallet = getCurrentWallet()
+  const [royaltyValues, setRoyaltyValues] = useState([
+    { name: wallet.accountId, price: '10' },
+  ])
   const handleNameChange = (event) => {
     setName(event.target.value)
   }
@@ -105,7 +107,7 @@ export const CollectionCreate = () => {
     setRoyaltyValues([...royaltyValues, { name: '', price: '' }])
   }
 
-  const removeFormFields = (i) => {
+  const removeFormFields = (i, e) => {
     const newFormValues = [...royaltyValues]
     newFormValues.splice(i, 1)
     setRoyaltyValues(newFormValues)
@@ -119,7 +121,6 @@ export const CollectionCreate = () => {
       case 'ADD_FILE_TO_LIST':
         return { ...state, fileList: state.fileList.concat(action.files) }
       case 'SET_LOGO':
-        console.log('state logo', action.logo)
         return { ...state, logo: action.logo }
       case 'SET_FEATURED_IMAGE':
         return { ...state, featuredImage: action.featuredImage }
@@ -140,21 +141,20 @@ export const CollectionCreate = () => {
 
   useEffect(() => {
     ;(async () => {
-      if (!wallet.accountName) {
+      if (!wallet.accountId) {
         return
       }
       let res_categories = await fetch(process.env.NEXT_PUBLIC_CATEGORY_URL)
       let categories = await res_categories.json()
       setNftCategories(categories.categories)
     })()
-  }, [wallet])
+  }, [wallet.accountId])
   useEffect(() => {
     if (txHash && getCurrentWallet().wallet.isSignedIn()) {
       checkTransaction(txHash)
         .then((res: any) => {
           const transactionErrorType = getErrorMessage(res)
           const transaction = res.transaction
-          console.log('transactionType: ', res, transactionErrorType)
           return {
             isSwap:
               transaction?.actions[1]?.['FunctionCall']?.method_name ===
@@ -178,7 +178,7 @@ export const CollectionCreate = () => {
     }
   }, [txHash])
   const createCollection = async () => {
-    if (!wallet.accountName) {
+    if (!wallet.accountId) {
       toast.warning(`Please connect your wallet.`, {
         position: 'top-right',
         autoClose: 5000,
@@ -214,7 +214,18 @@ export const CollectionCreate = () => {
       })
       return
     }
-
+    if (category == '') {
+      toast.warning(`Please select a category.`, {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      })
+      return
+    }
     const jsonData = {}
     jsonData['logo'] = data.logo
     jsonData['featuredImage'] = data.featuredImage
@@ -232,7 +243,7 @@ export const CollectionCreate = () => {
     jsonData['tokens'] = ['Near']
     jsonData['themeValue'] = themeValue
     jsonData['explicit'] = explicit
-    jsonData['owner'] = wallet.accountName
+    jsonData['owner'] = wallet.accountId
     const pinataJson = {
       pinataMetadata: {
         name: name,
@@ -242,7 +253,6 @@ export const CollectionCreate = () => {
       },
       pinataContent: jsonData,
     }
-    console.log(pinataJson)
     setJsonUploading(true)
     let url = `https://api.pinata.cloud/pinning/pinJSONToIPFS`
     let response = await axios.post(url, pinataJson, {
@@ -260,9 +270,24 @@ export const CollectionCreate = () => {
     }
     setJsonUploading(false)
     const royalty = {}
+    let totalRoyalty = 0
     royaltyValues.forEach((element) => {
+      if (!element.price || !element.name) return
       royalty[element.name] = Number(element.price) * 100
+      totalRoyalty += Number(element.price)
     })
+    if (totalRoyalty > 70) {
+      toast.warning(`Maximum royalty cannot exceed 70%.`, {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      })
+      return
+    }
 
     try {
       await nftFunctionCall({
@@ -276,7 +301,7 @@ export const CollectionCreate = () => {
           },
           price: null,
           royalty: royalty,
-          creator_id: wallet.accountName,
+          creator_id: wallet.accountId,
         },
         amount: '0.00854',
       })
@@ -461,14 +486,8 @@ export const CollectionCreate = () => {
           </Link>
           <HStack margin="10px 0">
             <h3>Royalty</h3>
-            <Button
-              style={{ background: 'gray', color: 'black', fontSize: '15px' }}
-              onClick={addFormFields}
-            >
-              Add More
-            </Button>
           </HStack>
-          <Stack margin="10px 0">
+          <Stack margin="10px 0" width="fit-content">
             {royaltyValues.map((element, index) => (
               <HStack key={index}>
                 <Stack>
@@ -493,12 +512,22 @@ export const CollectionCreate = () => {
                     <IconButton
                       aria-label="icon"
                       icon={<CloseIcon />}
-                      onClick={removeFormFields}
+                      onClick={(e) => removeFormFields(index, e)}
                     />
                   ) : null}
                 </Stack>
               </HStack>
             ))}
+            {royaltyValues.length < 5 && (
+              <HStack>
+                <IconButton
+                  aria-label="icon"
+                  icon={<SmallAddIcon width="20px" />}
+                  onClick={addFormFields}
+                  width="100%"
+                />
+              </HStack>
+            )}
           </Stack>
         </CollectionItem>
         <CollectionItem className="collection-item">
@@ -508,7 +537,7 @@ export const CollectionCreate = () => {
             <span>Near</span>
           </HStack>
         </CollectionItem>
-        <CollectionItem className="collection-item">
+        {/* <CollectionItem className="collection-item">
           <h3>Payment tokens</h3>
           <HStack spacing={0} className="chain-group">
             <TokenItem>
@@ -516,7 +545,7 @@ export const CollectionCreate = () => {
               <span>Near</span>
             </TokenItem>
           </HStack>
-        </CollectionItem>
+        </CollectionItem> */}
         <CollectionItem className="collection-item">
           <Button
             className="btn-default"

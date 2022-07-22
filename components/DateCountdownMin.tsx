@@ -14,7 +14,7 @@ const calculateStateFromProps = (
   const targetDate: Date = new Date(dateTo)
 
   const diff = targetDate.getTime() - currentDate.getTime()
-  let significance = ['year', 'month', 'day', 'hour', 'min', 'sec']
+  let significance = ['year', 'month', 'day', 'hour', 'min']
   let year = Math.floor(diff / 31104000000) // time diff in years
   let month = Math.floor((diff / 2592000000) % 12) // time diff in months (modulated to 12)
   let day = Math.floor((diff / 86400000) % 30) // time diff in days (modulated to 30)
@@ -31,9 +31,6 @@ const calculateStateFromProps = (
           significance = significance.slice(1)
           if (hour === 0) {
             significance = significance.slice(1)
-            if (min === 0) {
-              significance = significance.slice(1)
-            }
           }
         }
       }
@@ -261,7 +258,7 @@ class DateCountdown extends Component<DateCountdownProps, DateCountdownStates> {
     } else {
       const newSec = (sec + 59) % 60
       this.setState({ sec: newSec })
-      this.animateAndChangeIfNeeded('sec', 'none')
+      // this.animateAndChangeIfNeeded('sec', 'none')
 
       if (newSec === 0) {
         this.animateAndChangeIfNeeded('min', 'sec')
@@ -302,23 +299,23 @@ class DateCountdown extends Component<DateCountdownProps, DateCountdownStates> {
     let { significance, diff } = state
     // eslint-disable-next-line camelcase
     let { locales, locales_plural } = this.props
-    let units = ['year', 'month', 'day', 'hour', 'min', 'sec']
-
+    let units = ['year', 'month', 'day', 'hour', 'min']
+    let zero_status = ['day', 'hour', 'min']
     if (diff < 0) {
       // past date
       return (
         <span className="odometer-block">
-          {units.map((unit, key) => {
-            if (significance.indexOf(unit) !== -1) {
+          {zero_status.map((unit, key) => {
+            if (units.indexOf(unit) !== -1) {
               return (
                 <span style={{ display: 'flex' }} key={`unit-${key}`}>
                   <span className="dcd-info">
                     <span ref={unit} className={`${unit} dcd-val`}>
                       00
                     </span>
-                    <span className="dcd-comment">{locales[key]}</span>
+                    <span className="dcd-comment">{locales[key + 2]}</span>
                   </span>
-                  <span>{unit != 'sec' && ':'}</span>
+                  <span>{unit != 'min' && ':'}</span>
                 </span>
               )
             }

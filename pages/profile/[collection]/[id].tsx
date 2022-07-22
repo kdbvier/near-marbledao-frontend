@@ -121,7 +121,7 @@ export default function CreateNFT() {
 
   useEffect(() => {
     ;(async () => {
-      if (!wallet.accountName) {
+      if (!wallet.accountId) {
         return
       }
       if (collectionId === '[collectionId]' || id === '[id]') return
@@ -130,7 +130,6 @@ export default function CreateNFT() {
         process.env.NEXT_PUBLIC_PINATA_URL + nftInfo.metadata.reference
       )
       const res_nft = await ipfs_nft.json()
-      console.log('res_nft: ', res_nft)
       setImgUri(res_nft.uri)
       setName(res_nft.name)
       setExternalLink(res_nft.externalLink)
@@ -144,7 +143,7 @@ export default function CreateNFT() {
       setHead(res_nft.attributes[6].value)
       setHelmet(res_nft.attributes[7].value)
     })()
-  }, [wallet.accountName, collectionId, id])
+  }, [wallet.accountId, collectionId, id])
 
   const [data, dispatch] = useReducer(reducer, {
     inDropZone: false,
@@ -156,7 +155,7 @@ export default function CreateNFT() {
     setImgUri(data.nft)
   }, [data])
   const createNFT = async () => {
-    if (!wallet.accountName) {
+    if (!wallet.accountId) {
       toast.warning(`Please connect your wallet.`, {
         position: 'top-right',
         autoClose: 5000,
@@ -256,7 +255,7 @@ export default function CreateNFT() {
       <PageHeader title="Edit your NFT Metadata" subtitle="" align="center" />
       <ChakraProvider>
         <Container className="middle mauto">
-          <Flex>
+          <Flex alignItems="end">
             <Stack>
               <h3>
                 Image, Video, Audio, Or 3D model
@@ -267,14 +266,6 @@ export default function CreateNFT() {
                 alt="Image"
               />
             </Stack>
-            <ChakraButton
-              colorScheme="blackAlpha"
-              onClick={() => {
-                setImageEdit(true)
-              }}
-            >
-              Edit
-            </ChakraButton>
           </Flex>
           {imageEdit && (
             <ItemContainer className="collection-item">
